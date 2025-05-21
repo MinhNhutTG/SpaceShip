@@ -1,5 +1,5 @@
 import threading
-
+from Music import Music
 import pygame
 import time
 
@@ -11,7 +11,7 @@ class Button:
     def __init__(self, position ,size,type_button):
         self.rect = pygame.Rect(position,size)
         self.type_button = type_button
-        self.sound_click = pygame.mixer.Sound("Asset/click.mp3")
+        self.sound_click = pygame.mixer.Sound("Asset/sound/click.mp3")
         if type_button == "Play":
             self.image = pygame.image.load(btn_Play[0])
             self.image = pygame.transform.scale(self.image, self.rect.size)
