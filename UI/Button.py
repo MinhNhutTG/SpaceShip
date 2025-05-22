@@ -1,8 +1,8 @@
 import threading
 import pygame
 
-btn_Play = ["Asset/btnPlay.png","Asset/Play_Click.png"]
-btn_Quit = ["Asset/btnExit.png","Asset/Exit_Click.png"]
+btn_Play = ["Asset/buttons/btnPlay.png","Asset/buttons/Play_Click.png"]
+btn_Quit = ["Asset/buttons/btnExit.png","Asset/buttons/Exit_Click.png"]
 
 class Button:
     def __init__(self, position ,size,type_button):

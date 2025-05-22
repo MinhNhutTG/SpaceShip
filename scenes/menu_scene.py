@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from core.Music import Music
 from core.scene import Scene
 from UI.Button import Button
+from scenes.game_scene import GameScene
 
 
 load_dotenv()
@@ -14,7 +15,7 @@ HEIGHT= int(os.getenv("HEIGHT_SCREEN"))
 class MenuScene(Scene):
     def __init__(self,manager):
         super().__init__(manager)
-        self.background = pygame.image.load("Asset\\bg_game_start.png")
+        self.background = pygame.image.load("Asset/backgrounds/bg_game_start.png")
         self.btn_play = Button((WIDTH / 2 - 120, HEIGHT / 2 - 200), (200, 60), "Play")
         self.btn_quit = Button((WIDTH / 2 - 120, HEIGHT / 2 - 100 ), (200, 60), "Exit")
 
@@ -26,7 +27,10 @@ class MenuScene(Scene):
             if event.type == pygame.QUIT:
                 self.is_running = False
             if self.btn_play.is_clicked(event ,screen):
+                Music.music_stop()
+                self.manager.change_scene(GameScene(self.manager))
                 print("hello")
+
             if self.btn_quit.is_clicked(event ,screen):
                 print("bye")
 
