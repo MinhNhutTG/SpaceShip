@@ -11,5 +11,7 @@ class GameManager:
     def __init__(self):
         self.current_level = os.getenv("LEVEL")
         self.max_current_level = 5
+
+
     def load_map(self):
         return pygame.image.load("Asset/Maps/level" + str(self.current_level) + ".png")
