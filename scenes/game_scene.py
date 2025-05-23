@@ -6,7 +6,7 @@ from core.player import Spaceship
 from dotenv import load_dotenv
 from PopupMessage import PopupMessage
 from GameManager import GameManager
-
+from core.Bullet import Bullet
 
 
 load_dotenv()
@@ -49,6 +49,9 @@ class GameScene(Scene):
         keys = pygame.key.get_pressed()
         self.spaceship.move(keys)
 
+        for bullet in self.spaceship.bullets:
+            bullet.update()
+
 
     def render(self, screen):
         if self.paused:
@@ -56,6 +59,10 @@ class GameScene(Scene):
             screen.fill((0, 0, 50))
             screen.blit(self.background, (0, 0))
             self.spaceship.draw(screen)
+
+            for bullet in self.spaceship.bullets:
+                bullet.draw(screen)
+
         else :
             notification = PopupMessage((WIDTH_SCREEN * 2/8, HEIGHT_SCREEN / 2 ), "GAME PAUSE " , submessage="Press ESC To Continue")
             notification.show()

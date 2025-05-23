@@ -1,6 +1,9 @@
 import pygame
 import math
-
+from core.Bullet import Bullet
+pygame.mixer.init()
+shoot_sound = pygame.mixer.Sound("Asset/sound/sound_bullet.mp3")
+shoot_sound.set_volume(0.1)
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, position, image):
         super().__init__()
@@ -12,7 +15,8 @@ class Spaceship(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 5
         self.time_last_shot = 0
-        self.time_cooldown = 300
+        self.time_cooldown = 500
+        self.bullets = []
 
 
     def move(self, keys):
@@ -47,15 +51,14 @@ class Spaceship(pygame.sprite.Sprite):
             self.rect.top = 0
         if self.rect.bottom > 700:
             self.rect.bottom = 700
-    def shoot(self):
+    def shoot(self ):
         time_current = pygame.time.get_ticks()
         if time_current - self.time_last_shot > self.time_cooldown:
             self.time_last_shot = time_current
-            print("ban")
-        # bullet = Bullet(self.rect.centerx, self.rect.top)
-        # self.bullets.append(bullet)
-        # return bullet
-
+            bullet =  Bullet(self.rect.centerx -10, self.rect.top,color=(255, 0, 0))
+            self.bullets.append(bullet)
+            shoot_sound.play()
+            print("Ban")
 
     def draw(self, surface):
         surface.blit(self.image, self.rect)

@@ -3,7 +3,8 @@ import pygame
 sounds = [
     "Asset/sound/theme.mp3",
     "Asset/sound/sound_play.mp3",
-    "Asset/sound/click.mp3"
+    "Asset/sound/click.mp3",
+    "Asset/sound/sound_bullet.mp3"
 ]
 
 class Music:
