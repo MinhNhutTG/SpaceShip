@@ -2,8 +2,9 @@ import pygame
 
 Bullet_Image = ["Asset/bullet/bullet.png"]
 
-class Bullet:
+class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, speed=-10, color=(255, 255, 0), width=20, height=25):
+        super().__init__()
         self.rect = pygame.Rect(x, y, width, height)
         self.speed = speed
         self.color = color

@@ -28,6 +28,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.hidden_duration = 700
         self.lives = 3
         self.score = 0
+        self.bullets_group = pygame.sprite.Group()
 
 
     def move(self, keys):
@@ -69,8 +70,10 @@ class Spaceship(pygame.sprite.Sprite):
                 self.time_last_shot = time_current
                 bullet =  Bullet(self.rect.centerx -10, self.rect.top,color=(255, 0, 0))
                 self.bullets.append(bullet)
+                self.bullets_group.add(bullet)
                 shoot_sound.play()
 
+        return 0
 
     def draw(self, surface):
         if not self.hidden:
@@ -96,4 +99,5 @@ class Spaceship(pygame.sprite.Sprite):
             self.lives -= 1
 
     def kill_score(self, score):
-        self.score += score
+        if not self.hidden:
+            self.score += score

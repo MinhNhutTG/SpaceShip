@@ -26,6 +26,7 @@ class GameScene(Scene):
         self.enemies = pygame.sprite.Group()
 
 
+
         rows = 2
         columns = 9
         spacing_x = 80
@@ -54,7 +55,7 @@ class GameScene(Scene):
                 exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.paused:
-                    self.spaceship.shoot()
+                  self.spaceship.shoot()
                 if event.key == pygame.K_ESCAPE:
                     if self.paused is True:
                         self.paused = False
@@ -67,6 +68,10 @@ class GameScene(Scene):
             self.spaceship.kill()
             self.spaceship.kill_score(10)
             self.spaceship.take_hidden()
+        hits2 = pygame.sprite.groupcollide(self.spaceship.bullets_group, self.enemies, True, True)
+        if hits2:
+            print("tieu diet duoc dich")
+            self.spaceship.kill_score(10)
 
 
 
@@ -75,6 +80,7 @@ class GameScene(Scene):
             keys = pygame.key.get_pressed()
             self.spaceship.move(keys)
             self.spaceship.update()
+            self.spaceship.bullets_group.update()
 
             for bullet in self.spaceship.bullets:
                 bullet.update()

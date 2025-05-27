@@ -44,13 +44,13 @@ class EnemyShip(pygame.sprite.Sprite):
     def set_speed(self, enemy_type):
         """Thiết lập tốc độ dựa vào loại enemy"""
         if enemy_type == 1:
-            self.speed_x = random.choice([-2, 2])  # di chuyển trái/phải
+            self.speed_x = random.choice([-1, 1])  # di chuyển trái/phải
             self.speed_y = random.randint(1, 2)    # di chuyển xuống
         elif enemy_type == 2:
-            self.speed_x = random.choice([-3, -2, 2, 3])
+            self.speed_x = random.choice([-2, -1, 1, 2])
             self.speed_y = random.randint(2, 3)
         elif enemy_type == 3:
-            self.speed_x = random.choice([-4, -3, 3, 4])
+            self.speed_x = random.choice([-3, -2, 2, 3])
             self.speed_y = random.randint(3, 4)
         else:
             self.speed_x = 0
