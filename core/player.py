@@ -1,11 +1,15 @@
 import pygame
 import math
 from core.Bullet import Bullet
+from core.HUD import HUD
 pygame.mixer.init()
 shoot_sound = pygame.mixer.Sound("Asset/sound/sound_bullet.mp3")
 shoot_sound.set_volume(0.1)
 
 Images=["Asset/player/player.png"]
+
+HUD.init(font_size=25)
+
 class Spaceship(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__()
@@ -19,6 +23,11 @@ class Spaceship(pygame.sprite.Sprite):
         self.time_last_shot = 0
         self.time_cooldown = 500
         self.bullets = []
+        self.hidden = False
+        self.hidden_start_time = 0
+        self.hidden_duration = 700
+        self.lives = 3
+        self.score = 0
 
 
     def move(self, keys):
@@ -54,13 +63,37 @@ class Spaceship(pygame.sprite.Sprite):
         if self.rect.bottom > 700:
             self.rect.bottom = 700
     def shoot(self ):
-        time_current = pygame.time.get_ticks()
-        if time_current - self.time_last_shot > self.time_cooldown:
-            self.time_last_shot = time_current
-            bullet =  Bullet(self.rect.centerx -10, self.rect.top,color=(255, 0, 0))
-            self.bullets.append(bullet)
-            shoot_sound.play()
-            print("Ban")
+        if not self.hidden:
+            time_current = pygame.time.get_ticks()
+            if time_current - self.time_last_shot > self.time_cooldown:
+                self.time_last_shot = time_current
+                bullet =  Bullet(self.rect.centerx -10, self.rect.top,color=(255, 0, 0))
+                self.bullets.append(bullet)
+                shoot_sound.play()
+
 
     def draw(self, surface):
-        surface.blit(self.image, self.rect)
+        if not self.hidden:
+            surface.blit(self.image, self.rect)
+        HUD.draw(surface, self.lives, self.score)
+
+
+    def take_hidden(self):
+        """Kích hoạt trạng thái ẩn (miễn thương) trong 2 giây."""
+        self.hidden = True
+        self.hidden_start_time = pygame.time.get_ticks()
+
+    def update(self):
+        """Cập nhật trạng thái ẩn nếu đang hoạt động."""
+        if self.hidden:
+            now = pygame.time.get_ticks()
+            if now - self.hidden_start_time >= self.hidden_duration:
+                self.hidden = False
+            HUD.update(self.score, self.lives)
+
+    def kill(self):
+        if not self.hidden:
+            self.lives -= 1
+
+    def kill_score(self, score):
+        self.score += score

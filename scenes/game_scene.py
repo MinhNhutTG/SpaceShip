@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 from PopupMessage import PopupMessage
 from GameManager import GameManager
 from core.Enemy import EnemyShip
+from core.HUD import HUD
 
 load_dotenv()
 game_manager = GameManager()
 
 WIDTH_SCREEN = int(os.getenv("WIDTH_SCREEN"))
 HEIGHT_SCREEN = int(os.getenv("HEIGHT_SCREEN"))
+
 
 class GameScene(Scene):
     def __init__(self, manager):
@@ -22,6 +24,7 @@ class GameScene(Scene):
         self.font = pygame.font.SysFont("Arial", 30)
         self.spaceship = Spaceship( (WIDTH_SCREEN / 2, HEIGHT_SCREEN * 3/4 ))
         self.enemies = pygame.sprite.Group()
+
 
         rows = 2
         columns = 9
@@ -60,16 +63,27 @@ class GameScene(Scene):
 
     def handle_collisions(self):
         hits = pygame.sprite.spritecollide(self.spaceship, self.enemies, True)
+        if hits:
+            self.spaceship.kill()
+            self.spaceship.kill_score(10)
+            self.spaceship.take_hidden()
+
+
 
     def update(self):
-        keys = pygame.key.get_pressed()
-        self.spaceship.move(keys)
+        if self.spaceship.lives > 0:
+            keys = pygame.key.get_pressed()
+            self.spaceship.move(keys)
+            self.spaceship.update()
 
-        for bullet in self.spaceship.bullets:
-            bullet.update()
+            for bullet in self.spaceship.bullets:
+                bullet.update()
 
-        self.enemies.update()
-        self.handle_collisions()
+            self.enemies.update()
+
+            self.handle_collisions()
+
+
 
 
 
@@ -82,8 +96,8 @@ class GameScene(Scene):
 
             for bullet in self.spaceship.bullets:
                 bullet.draw(screen)
-
             self.enemies.draw(screen)
+
         else :
             notification = PopupMessage((WIDTH_SCREEN * 2/8, HEIGHT_SCREEN / 2 ), "GAME PAUSE " , submessage="Press ESC To Continue")
             notification.show()

@@ -1,6 +1,11 @@
 import pygame
 import random
 
+# explosion_image = pygame.image.load("Asset/effect/explosion.png")
+# explosion_image = pygame.transform.scale(explosion_image, (50, 50))
+# explosion_sound = pygame.mixer.Sound("Asset/sound/explosion.wav")
+# explosion_sound.set_volume(0.2)
+
 class EnemyShip(pygame.sprite.Sprite):
     def __init__(self, screen_width, screen_height, enemy_type=1, custom_position=False):
         super().__init__()
@@ -9,12 +14,12 @@ class EnemyShip(pygame.sprite.Sprite):
         self.screen_height = screen_height
         self.enemy_type = enemy_type
 
-        # Tải hình ảnh của enemy tùy theo loại
+
         self.image = self.load_image(enemy_type)
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
 
-        # Đặt vị trí ban đầu nếu chưa được đặt sẵn
+
         if not custom_position:
             self.rect.x = random.randint(0, screen_width - self.rect.width)
             self.rect.y = random.randint(-100, -40)
@@ -63,6 +68,7 @@ class EnemyShip(pygame.sprite.Sprite):
         # Nếu vượt khỏi màn hình dưới thì đặt lại từ trên
         if self.rect.top > self.screen_height:
             self.reset_position()
+
 
     def reset_position(self):
         """Đặt lại vị trí và tốc độ khi enemy đi khỏi màn hình"""
