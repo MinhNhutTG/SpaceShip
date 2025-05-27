@@ -4,13 +4,15 @@ from core.Bullet import Bullet
 pygame.mixer.init()
 shoot_sound = pygame.mixer.Sound("Asset/sound/sound_bullet.mp3")
 shoot_sound.set_volume(0.1)
+
+Images=["Asset/player/player.png"]
 class Spaceship(pygame.sprite.Sprite):
-    def __init__(self, position, image):
+    def __init__(self, position):
         super().__init__()
         x, y = position
         self.position_x = x
         self.position_y = y
-        self.original_image = pygame.image.load(image).convert_alpha()
+        self.original_image = pygame.image.load(Images[0]).convert_alpha()
         self.image = pygame.transform.scale(self.original_image, (80, 80))
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 5
