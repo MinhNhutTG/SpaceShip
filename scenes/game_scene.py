@@ -8,6 +8,7 @@ from PopupMessage import PopupMessage
 from GameManager import GameManager
 from core.Enemy import EnemyShip
 from core.HUD import HUD
+import time
 
 load_dotenv()
 game_manager = GameManager()
@@ -23,9 +24,8 @@ class GameScene(Scene):
         self.background = game_manager.load_map()
         self.font = pygame.font.SysFont("Arial", 30)
         self.spaceship = Spaceship( (WIDTH_SCREEN / 2, HEIGHT_SCREEN * 3/4 ))
+        self.spaceship.level = game_manager.current_level
         self.enemies = pygame.sprite.Group()
-
-
 
         rows = 2
         columns = 9
@@ -72,6 +72,10 @@ class GameScene(Scene):
         if hits2:
             print("tieu diet duoc dich")
             self.spaceship.kill_score(10)
+            for bullet in hits2.keys():
+                if bullet in self.spaceship.bullets:
+
+                    self.spaceship.bullets.remove(bullet)
 
 
 
@@ -82,12 +86,21 @@ class GameScene(Scene):
             self.spaceship.update()
             self.spaceship.bullets_group.update()
 
+
+
             for bullet in self.spaceship.bullets:
                 bullet.update()
 
             self.enemies.update()
 
             self.handle_collisions()
+
+            if self.spaceship.score >= game_manager.point + 10:
+                game_manager.next_level()
+                self.spaceship.level = game_manager.current_level
+                self.enemies.empty()
+                self.background = game_manager.load_map()
+                print(self.background)
 
 
 
