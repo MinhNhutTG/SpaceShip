@@ -4,7 +4,8 @@ sounds = [
     "Asset/sound/theme.mp3",
     "Asset/sound/sound_play.mp3",
     "Asset/sound/click.mp3",
-    "Asset/sound/sound_bullet.mp3"
+    "Asset/sound/sound_bullet.mp3",
+    "Asset/sound/sound_play_1.mp3"
 ]
 
 class Music:
@@ -27,5 +28,7 @@ class Music:
 
     @staticmethod
     def play_sound_main():
-        Music.music_load(sounds[1])
+        Music.music_load(sounds[4])
+        pygame.mixer.music.set_volume(0.3)
         Music.music_play()
+

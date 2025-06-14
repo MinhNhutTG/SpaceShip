@@ -21,7 +21,7 @@ def main():
 
     while running:
         scene_manager.current_scene.handle_events(pygame.event.get(),screen)
-        scene_manager.current_scene.update()
+        scene_manager.current_scene.update(screen)
         scene_manager.current_scene.render(screen)
         pygame.display.flip()
         clock.tick(60)  # limits FPS to 6

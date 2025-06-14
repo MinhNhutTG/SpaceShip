@@ -1,5 +1,8 @@
 import pygame
 import os
+
+
+
 from core.Music import Music
 from core.scene import Scene
 from core.player import Spaceship
@@ -26,23 +29,12 @@ class GameScene(Scene):
         self.spaceship = Spaceship( (WIDTH_SCREEN / 2, HEIGHT_SCREEN * 3/4 ))
         self.spaceship.level = game_manager.current_level
         self.enemies = pygame.sprite.Group()
+        self.level_up = False
+        self.level_upStartTime =  0
+        self.level_up_duringTime = 3
 
-        rows = 2
-        columns = 9
-        spacing_x = 80
-        spacing_y = 60
-        offset_x = 100
-        offset_y = 30
 
-        for row in range(rows):
-            for col in range(columns):
-
-                enemy_type = (col % 3) + 1
-                enemy = EnemyShip(WIDTH_SCREEN, HEIGHT_SCREEN, enemy_type=enemy_type ,custom_position=True)
-                enemy.rect.x = offset_x + col * spacing_x
-                enemy.rect.y = offset_y + row * spacing_y
-                print(type(enemy))
-                self.enemies.add(enemy)
+        self.spawn_enemies()
 
         # vị trí bắt đầu
         Music.play_sound_main()
@@ -79,7 +71,7 @@ class GameScene(Scene):
 
 
 
-    def update(self):
+    def update(self,screen):
         if self.spaceship.lives > 0:
             keys = pygame.key.get_pressed()
             self.spaceship.move(keys)
@@ -92,21 +84,37 @@ class GameScene(Scene):
                 bullet.update()
 
             self.enemies.update()
-
             self.handle_collisions()
 
-            if self.spaceship.score >= game_manager.point + 10:
+            if self.level_up:
+                if time.time() - self.level_upStartTime >= self.level_up_duringTime :
+                    Music.play_sound_main()
+                    self.spaceship.level = game_manager.current_level
+                    self.enemies.empty()
+                    self.background = game_manager.load_map()
+                    self.spawn_enemies()
+                    self.level_up = False
+                    return
+
+
+            if self.spaceship.score >= game_manager.point :
                 game_manager.next_level()
-                self.spaceship.level = game_manager.current_level
-                self.enemies.empty()
-                self.background = game_manager.load_map()
-                print(self.background)
+                self.level_up = True
+                self.level_upStartTime = time.time()
+
+
+
 
 
 
 
 
     def render(self, screen):
+        if self.level_up:
+            Music.music_stop()
+            print("GIua hiep")
+            self.enemies.empty()
+
         if self.paused:
             screen.blit(self.background, (0,0))
             screen.fill((0, 0, 50))
@@ -122,4 +130,21 @@ class GameScene(Scene):
             notification.show()
             notification.draw(screen)
 
+    def spawn_enemies(self):
+        rows = 2
+        columns = 9
+        spacing_x = 80
+        spacing_y = 60
+        offset_x = 100
+        offset_y = 30
+
+        for row in range(rows):
+            for col in range(columns):
+
+                enemy_type = (col % 3) + 1
+                enemy = EnemyShip(WIDTH_SCREEN, HEIGHT_SCREEN, enemy_type=enemy_type ,custom_position=True)
+                enemy.rect.x = offset_x + col * spacing_x
+                enemy.rect.y = offset_y + row * spacing_y
+                print(type(enemy))
+                self.enemies.add(enemy)
 

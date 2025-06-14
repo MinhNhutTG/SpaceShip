@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 mapImage = [
     "Asset/Maps/level1.png",
+    "Asset/Maps/level2.jpg",
     "Asset/Maps/level2.png",
     "Asset/Maps/level3.png"
 ]
@@ -11,9 +12,10 @@ class GameManager:
     def __init__(self):
         self.current_level = int(os.getenv("LEVEL"))
         self.max_current_level = 5
-        self.point = 100
+        self.point = 120
 
     def next_level(self):
+        print("Next level")
         self.current_level += 1
         self.point*=self.current_level
 
