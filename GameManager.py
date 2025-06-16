@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 mapImage = [
     "Asset/Maps/level1.png",
     "Asset/Maps/level2.jpg",
-    "Asset/Maps/level2.png",
-    "Asset/Maps/level3.png"
+    "Asset/Maps/level3.png",
+    "Asset/Maps/level4.png",
+    "Asset/Maps/level5.jpg"
+
 ]
 class GameManager:
     def __init__(self):
@@ -23,8 +25,7 @@ class GameManager:
 
     def load_map(self):
         print("Loading map "+ str(self.current_level))
-
-        return pygame.image.load("Asset/Maps/level" + str(self.current_level) + ".png")
+        return pygame.image.load(mapImage[self.current_level-1])
 
     def update_level_env(self):
         with open(".env", "r") as file:

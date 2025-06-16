@@ -13,8 +13,6 @@ class EnemyShip(pygame.sprite.Sprite):
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.enemy_type = enemy_type
-
-
         self.image = self.load_image(enemy_type)
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
