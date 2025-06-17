@@ -25,6 +25,7 @@ HEIGHT_SCREEN = int(os.getenv("HEIGHT_SCREEN"))
 class GameScene(Scene):
     def __init__(self, manager):
         super().__init__(manager)
+
         self.paused = True
         self.spawn_item = False
         self.game_over = False
@@ -45,6 +46,7 @@ class GameScene(Scene):
         self.bullet_powerup_start = None
         self.bullet_powerup_duringTime = 5000
 
+
         # vị trí bắt đầu
         Music.play_sound_main()
         Music.music_play()
@@ -60,6 +62,7 @@ class GameScene(Scene):
             elif event.type == pygame.KEYDOWN:
                 if self.game_over:
                     if event.key == pygame.K_ESCAPE:
+
                         from scenes.menu_scene import MenuScene
                         self.manager.change_scene(MenuScene(self.manager))
 
@@ -106,6 +109,8 @@ class GameScene(Scene):
 
 
     def update(self,screen):
+        if not self.paused:
+            return
         if self.spaceship.lives > 0:
             keys = pygame.key.get_pressed()
             self.spaceship.move(keys)
@@ -123,7 +128,7 @@ class GameScene(Scene):
                 self.items.add(item)
                 self.spawn_item = True
 
-            self.items.update()
+
 
             if self.level_up:
                 if time.time() - self.level_upStartTime >= self.level_up_duringTime :
@@ -150,6 +155,8 @@ class GameScene(Scene):
             if self.spaceship.lives <= 0:
                 self.spaceship.kill()
                 self.enemies.empty()
+                game_manager.current_level = 1
+                game_manager.point = 120
 
 
                 self.game_over = True
@@ -164,7 +171,7 @@ class GameScene(Scene):
             if self.spaceship.has_special_bullet :
                 if pygame.time.get_ticks() - self.bullet_powerup_start > self.bullet_powerup_duringTime :
                     self.spaceship.has_special_bullet  = False
-
+            self.items.update()
 
     def render(self, screen):
         if self.game_over:
@@ -187,7 +194,6 @@ class GameScene(Scene):
             for bullet in self.spaceship.bullets:
                 bullet.draw(screen)
             self.enemies.draw(screen)
-
         else :
             notification = PopupMessage((WIDTH_SCREEN * 2/8, HEIGHT_SCREEN / 2 ), "GAME PAUSE " , submessage="Press ESC To Continue")
             notification.show()
@@ -196,6 +202,8 @@ class GameScene(Scene):
             game_manager.update_level_env()
 
         self.items.draw(screen)
+
+
 
     def spawn_enemies(self):
         rows = 2
