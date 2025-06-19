@@ -7,7 +7,7 @@ class Scene:
     def handle_events(self, events,screen):
         pass
 
-    def update(self,screen):
+    def update(self,screen,dt):
         pass
 
     def render(self, screen):

@@ -4,11 +4,10 @@ from dotenv import load_dotenv
 
 mapImage = [
     "Asset/Maps/level1.png",
-    "Asset/Maps/level2.jpg",
+    "Asset/Maps/level2.png",
     "Asset/Maps/level3.png",
     "Asset/Maps/level4.png",
     "Asset/Maps/level5.jpg"
-
 ]
 class GameManager:
     def __init__(self):

@@ -1,78 +1,88 @@
 import pygame
 import random
-
-# explosion_image = pygame.image.load("Asset/effect/explosion.png")
-# explosion_image = pygame.transform.scale(explosion_image, (50, 50))
-# explosion_sound = pygame.mixer.Sound("Asset/sound/explosion.wav")
-# explosion_sound.set_volume(0.2)
+from core.EnemyBullet import EnemyBullet
 
 class EnemyShip(pygame.sprite.Sprite):
-    def __init__(self, screen_width, screen_height, enemy_type=1, custom_position=False):
+    def __init__(self, screen_width, screen_height, pos_x, pos_y, enemy_type , bullet_group):
         super().__init__()
 
         self.screen_width = screen_width
         self.screen_height = screen_height
         self.enemy_type = enemy_type
-        self.image = self.load_image(enemy_type)
-        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.bullet_group =bullet_group
+        self.enemy_bullets = pygame.sprite.Group()
+        self.shoot_delay = 2000  # milliseconds
+        self.last_shot = pygame.time.get_ticks()
+
+        self.original_image = self.loadImage()
+        self.image = pygame.transform.scale(self.original_image, (50, 50))
         self.rect = self.image.get_rect()
 
+        # Vị trí khởi tạo
+        self.rect.x = pos_x
+        self.rect.y = pos_y
+        self.rect_y = float(self.rect.y)
 
-        if not custom_position:
-            self.rect.x = random.randint(0, screen_width - self.rect.width)
-            self.rect.y = random.randint(-100, -40)
+        # Vận tốc chỉ theo trục dọc
+        self.speed_y = 100  # tốc độ rơi dọc (pixel/s)
+        self.last_update = pygame.time.get_ticks()
 
-        # Gán tốc độ di chuyển
-        self.set_speed(enemy_type)
+        self.exploded = False
+        self.explosion_image = pygame.image.load("Asset/enemy/explosion.png").convert_alpha()
+        self.explosion_sound = pygame.mixer.Sound("Asset/sound/reward.mp3")
+        self.explosion_duration = 300  # milliseconds
+        self.explosion_start_time = None
 
-    def load_image(self, enemy_type):
-        """Chọn ảnh cho enemy theo loại"""
-        if enemy_type == 1:
-            return pygame.image.load("Asset/enemy/enemyship_level4.png")
-        elif enemy_type == 2:
-            return pygame.image.load("Asset/enemy/enemyship_level2.png")
-        elif enemy_type == 3:
-            return pygame.image.load("Asset/enemy/enemyship_level5.png")
-        else:
-            # Nếu loại không hợp lệ, tạo hình màu đỏ thay thế
-            temp_image = pygame.Surface((50, 50))
-            temp_image.fill((255, 0, 0))
-            return temp_image
-
-    def set_speed(self, enemy_type):
-        """Thiết lập tốc độ dựa vào loại enemy"""
-        if enemy_type == 1:
-            self.speed_x = random.choice([-1, 1])  # di chuyển trái/phải
-            self.speed_y = random.randint(1, 2)    # di chuyển xuống
-        elif enemy_type == 2:
-            self.speed_x = random.choice([-2, -1, 1, 2])
-            self.speed_y = random.randint(2, 3)
-        elif enemy_type == 3:
-            self.speed_x = random.choice([-3, -2, 2, 3])
-            self.speed_y = random.randint(3, 4)
-        else:
-            self.speed_x = 0
-            self.speed_y = 1
+    def loadImage(self):
+        path = ""
+        if self.enemy_type == "type1":
+            path = "Asset/enemy/enemyship_level2.png"
+        elif self.enemy_type == "type2":
+            path = "Asset/enemy/enemyship_level3.png"
+        elif self.enemy_type == "type3":
+            path = "Asset/enemy/enemyship_level4.png"
+        elif self.enemy_type == "type4":
+            path = "Asset/enemy/enemyship_level5.png"
+        return pygame.image.load(path).convert_alpha()
 
     def update(self):
-        """Cập nhật vị trí tàu địch mỗi khung hình"""
-        self.rect.x += self.speed_x
-        self.rect.y += self.speed_y
+        now = pygame.time.get_ticks()
+        dt = (now - self.last_update) / 1000.0
+        self.last_update = now
 
-        # Nếu chạm biên trái/phải thì quay đầu
-        if self.rect.left <= 0 or self.rect.right >= self.screen_width:
-            self.speed_x *= -1
+        if not self.exploded:
+            self.shoot(now)
 
-        # Nếu vượt khỏi màn hình dưới thì đặt lại từ trên
+        if self.exploded:
+            if now - self.explosion_start_time >= self.explosion_duration:
+                self.kill()  # Xóa khỏi sprite group
+            return  # không di chuyển nữa
+
+        # Di chuyển xuống dưới
+        self.rect_y += self.speed_y * dt
+        self.rect.y = int(self.rect_y)
+
+        # Nếu rơi khỏi màn hình, reset vị trí
         if self.rect.top > self.screen_height:
-            self.reset_position()
+            self.kill()
+            print("Da huy enemy")
 
 
-    def reset_position(self):
-        """Đặt lại vị trí và tốc độ khi enemy đi khỏi màn hình"""
-        self.rect.x = random.randint(0, self.screen_width - self.rect.width)
-        self.rect.y = random.randint(-100, -40)
-        self.set_speed(self.enemy_type)
+
+
+
     def draw(self, surface):
         surface.blit(self.image, self.rect)
+        self.enemy_bullets.draw(surface)
 
+    def explode(self):
+        self.exploded = True
+        self.explosion_start_time = pygame.time.get_ticks()
+        self.explosion_sound.play()
+        self.image = pygame.transform.scale(self.explosion_image, (50, 50))
+
+    def shoot(self, now):
+        if now - self.last_shot >= self.shoot_delay:
+            bullet = EnemyBullet(self.rect.centerx, self.rect.bottom)
+            self.bullet_group.add(bullet)
+            self.last_shot = now
