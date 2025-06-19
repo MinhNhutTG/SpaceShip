@@ -45,6 +45,7 @@ class GameScene(Scene):
         self.last_formation_spawn_time = pygame.time.get_ticks()
         self.formation_spawn_interval = 3000  # 3 giây
 
+
         # vị trí bắt đầu
         Music.play_sound_main()
         Music.music_play()
@@ -73,13 +74,7 @@ class GameScene(Scene):
                         self.paused = True
 
     def handle_collisions(self):
-        # Va chạm giữa enemy và player
-        hits = pygame.sprite.spritecollide(self.spaceship, self.enemies, False)
-        for enemy in hits:
-            if not enemy.exploded:
-                enemy.explode()
-                self.spaceship.kill()
-                self.spaceship.take_hidden()
+
 
         # Va chạm giữa đạn và enemy
         hits2 = pygame.sprite.groupcollide(self.spaceship.bullets_group, self.enemies, True, False)
@@ -99,7 +94,25 @@ class GameScene(Scene):
                             item = Item(item_type, WIDTH_SCREEN)
                             item.rect.center = enemy.rect.center
                             self.items.add(item)
+        # Va chạm giữa enemy và player
+        hits = pygame.sprite.spritecollide(self.spaceship, self.enemies, False)
+        for enemy in hits:
+            if not enemy.exploded:
+                enemy.explode()
+                self.spaceship.kill()
+                self.spaceship.take_hidden()
 
+        bullet_hits = pygame.sprite.groupcollide(
+            self.spaceship.bullets_group,  # Đạn người chơi
+            self.enemy_bullets_group,  # Đạn enemy
+            True,  # Xoá đạn người chơi khi va chạ a m
+            True  # Xoá đạn enemy khi va chạm
+        )
+
+        hit_by_enemy_bullets = pygame.sprite.spritecollide(self.spaceship, self.enemy_bullets_group, True)
+        for bullet in hit_by_enemy_bullets:
+            self.spaceship.kill()
+            self.spaceship.take_hidden()
         # Nhặt item
         hit3 = pygame.sprite.spritecollide(self.spaceship, self.items, True)
         for item in hit3:
@@ -111,27 +124,17 @@ class GameScene(Scene):
                 self.spaceship.has_special_bullet = True
                 self.bullet_powerup_start = pygame.time.get_ticks()
 
-        # Va chạm giữa đạn của người chơi và đạn của enemy
-        hit_by_enemy_bullets = pygame.sprite.spritecollide(self.spaceship, self.enemy_bullets_group, True)
-        for bullet in hit_by_enemy_bullets:
-            self.spaceship.kill()
-            self.spaceship.take_hidden()
 
 
-        bullet_hits = pygame.sprite.groupcollide(
-            self.spaceship.bullets_group,  # Đạn người chơi
-            self.enemy_bullets_group,  # Đạn enemy
-            True,  # Xoá đạn người chơi khi va chạ a m
-            True  # Xoá đạn enemy khi va chạm
-        )
+
+
 
 
 
     def update(self,screen,dt):
         if not self.paused:
-            return  # Nếu bạn muốn dừng cập nhật mọi thứ khi pause, thì OK
+            return  # Nếu bạn muốn dừng cập nhật mọi thứ khi pause
         else:
-
             self.bg_scroll += self.scroll_speed
             if self.bg_scroll >= self.background.get_height():
                 self.bg_scroll = 0 # Hoặc self.bg_scroll = 0 nếu muốn cuộn vòng lặp
@@ -142,48 +145,7 @@ class GameScene(Scene):
             self.spaceship.update()
             self.spaceship.bullets_group.update()
             self.enemies.update()
-
-
-
             self.handle_collisions()
-            if self.spaceship.lives == 1 and not self.spawn_item:
-                item_type = random.choice(["health", "ammo"])
-                item = Item(item_type, WIDTH_SCREEN)
-                self.items.add(item)
-                self.spawn_item = True
-
-
-
-            if self.level_up:
-                if time.time() - self.level_upStartTime >= self.level_up_duringTime :
-                    Music.play_sound_main()
-                    self.spaceship.level = game_manager.current_level
-                    self.spaceship.type_bullet = "type1"
-                    self.spaceship.type_bullet_previous = "type1"
-                    self.enemies.empty()
-                    self.background = game_manager.load_map()
-
-
-                    self.level_up = False
-                    self.last_formation_spawn_time = pygame.time.get_ticks()
-
-
-
-            if self.spaceship.score >= game_manager.point :
-                game_manager.next_level()
-                self.level_up = True
-                self.level_upStartTime = time.time()
-                self.turn_change_bullet = 0
-                self.spaceship.type_bullet = "type1"
-                self.spaceship.has_special_bullet = False
-
-            if self.spaceship.lives <= 0:
-                self.spaceship.kill()
-                self.enemies.empty()
-                game_manager.current_level = 1
-                game_manager.point = 120
-                self.game_over = True
-
 
             if self.spaceship.score >= game_manager.point / 2 and self.turn_change_bullet == 0:
                 self.turn_change_bullet = 1
@@ -192,8 +154,8 @@ class GameScene(Scene):
 
             if self.spaceship.has_special_bullet :
                 if pygame.time.get_ticks() - self.bullet_powerup_start > self.bullet_powerup_duringTime :
-                    self.spaceship.has_special_bullet  = False
                     self.spaceship.type_bullet = self.spaceship.type_bullet_previous
+                    self.spaceship.has_special_bullet = False
 
             now = pygame.time.get_ticks()
             if now - self.last_formation_spawn_time > self.formation_spawn_interval:
@@ -205,6 +167,29 @@ class GameScene(Scene):
                     self.spaceship.bullets.remove(bullet)
             self.enemy_bullets_group.update(dt)
             self.items.update()
+
+            if self.level_up:
+                if time.time() - self.level_upStartTime >= self.level_up_duringTime :
+                    Music.play_sound_main()
+                    self.spaceship.level = game_manager.current_level
+                    self.spaceship.type_bullet = "type1"
+                    self.spaceship.type_bullet_previous = "type1"
+                    self.enemies.empty()
+                    self.background = game_manager.load_map()
+                    self.last_formation_spawn_time = pygame.time.get_ticks()
+                    self.spaceship.has_special_bullet = False
+                    self.level_up = False
+            if self.spaceship.score >= game_manager.point:
+                game_manager.next_level()
+                self.level_up = True
+                self.level_upStartTime = time.time()
+                self.turn_change_bullet = 0
+            if self.spaceship.lives <= 0:
+                self.spaceship.kill()
+                self.enemies.empty()
+                game_manager.current_level = 1
+                game_manager.point = 300
+                self.game_over = True
 
     def render(self, screen):
 
