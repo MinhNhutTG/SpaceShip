@@ -13,7 +13,7 @@ class GameManager:
     def __init__(self):
         self.current_level = int(os.getenv("LEVEL"))
         self.max_current_level = 5
-        self.point = 120
+        self.point = 300
 
     def next_level(self):
         print("Next level")

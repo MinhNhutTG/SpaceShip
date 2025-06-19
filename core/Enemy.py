@@ -11,7 +11,7 @@ class EnemyShip(pygame.sprite.Sprite):
         self.enemy_type = enemy_type
         self.bullet_group =bullet_group
         self.enemy_bullets = pygame.sprite.Group()
-        self.shoot_delay = 2000  # milliseconds
+        self.shoot_delay = random.randint(2000, 4000)  # milliseconds
         self.last_shot = pygame.time.get_ticks()
 
         self.original_image = self.loadImage()

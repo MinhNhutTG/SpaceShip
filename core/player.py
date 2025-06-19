@@ -17,15 +17,12 @@ class Spaceship(pygame.sprite.Sprite):
         x, y = position
         self.position_x = x
         self.position_y = y
-        # self.original_image = pygame.image.load(Images[0]).convert_alpha()
-        # self.image = pygame.transform.scale(self.original_image, (80, 80))
         self.tilt_level = 0
         self.target_tilt = 0  # Mức nghiêng mục tiêu, sẽ được cập nhật trong move()
         self.last_tilt_update = 0
         self.tilt_update_interval = 50  # milliseconds (0.05 giây)
         self.level = 1
-        self._prev_level = 1  # Để kiểm tra khi level đổi
-
+        self._prev_level = 1  # Để kiểm tra khi level đổ
         self.load_image()
         self.apply_level_stats()
         self.rect = self.image.get_rect(center=(x, y))
@@ -43,7 +40,7 @@ class Spaceship(pygame.sprite.Sprite):
         self.score = 0
         self.level = None
         self.bullets_group = pygame.sprite.Group()
-        self.pos = pygame.Vector2(self.rect.center)  # lưu vị trí thực
+        self.pos = pygame.Vector2(self.rect.center)
 
     def load_image(self):
         # Dựa vào level để tạo prefix cho tên ảnh

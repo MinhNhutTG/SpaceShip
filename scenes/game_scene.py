@@ -106,7 +106,8 @@ class GameScene(Scene):
             if item.type == "health":
                 self.spaceship.heal()
             elif item.type == "ammo":
-                self.spaceship.type_bullet_previous = self.spaceship.type_bullet
+                if not self.spaceship.has_special_bullet:
+                    self.spaceship.type_bullet_previous = self.spaceship.type_bullet
                 self.spaceship.has_special_bullet = True
                 self.bullet_powerup_start = pygame.time.get_ticks()
 
@@ -120,7 +121,7 @@ class GameScene(Scene):
         bullet_hits = pygame.sprite.groupcollide(
             self.spaceship.bullets_group,  # Đạn người chơi
             self.enemy_bullets_group,  # Đạn enemy
-            True,  # Xoá đạn người chơi khi va chạm
+            True,  # Xoá đạn người chơi khi va chạ a m
             True  # Xoá đạn enemy khi va chạm
         )
 
