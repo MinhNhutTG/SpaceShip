@@ -28,7 +28,6 @@ class Spaceship(pygame.sprite.Sprite):
 
         self.load_image()
         self.apply_level_stats()
-
         self.rect = self.image.get_rect(center=(x, y))
         self.speed = 5
         self.time_last_shot = 0

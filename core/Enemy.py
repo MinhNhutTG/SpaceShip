@@ -15,7 +15,7 @@ class EnemyShip(pygame.sprite.Sprite):
         self.last_shot = pygame.time.get_ticks()
 
         self.original_image = self.loadImage()
-        self.image = pygame.transform.scale(self.original_image, (50, 50))
+        self.image = pygame.transform.scale(self.original_image, (70, 70))
         self.rect = self.image.get_rect()
 
         # Vị trí khởi tạo
